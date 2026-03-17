@@ -1,0 +1,206 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+/**
+ * Seeds the database with company data from the config.
+ * This runs via `npm run db:seed` or `npx prisma db seed`.
+ */
+const COMPANIES = [
+  // ─── Global Companies ──────────────────────────────────,
+  {
+    name: "Netflix",
+    slug: "netflix",
+    logo: "https://cdn.simpleicons.org/netflix/E50914",
+    website: "https://netflix.com",
+    blogUrl: "https://netflixtechblog.com",
+    feedUrl: "https://medium.com/feed/netflix-techblog",
+    feedType: "rss",
+    color: "#E50914",
+  },
+  {
+    name: "Airbnb",
+    slug: "airbnb",
+    logo: "https://cdn.simpleicons.org/airbnb/FF5A5F",
+    website: "https://airbnb.com",
+    blogUrl: "https://medium.com/airbnb-engineering",
+    feedUrl: "https://medium.com/feed/airbnb-engineering",
+    feedType: "rss",
+    color: "#FF5A5F",
+  },
+  {
+    name: "Meta",
+    slug: "meta",
+    logo: "https://cdn.simpleicons.org/meta/0081FB",
+    website: "https://meta.com",
+    blogUrl: "https://engineering.fb.com",
+    feedUrl: "https://engineering.fb.com/feed/",
+    feedType: "rss",
+    color: "#0081FB",
+  },
+  {
+    name: "GitHub",
+    slug: "github",
+    logo: "https://cdn.simpleicons.org/github/181717",
+    website: "https://github.com",
+    blogUrl: "https://github.blog/engineering",
+    feedUrl: "https://github.blog/engineering/feed/",
+    feedType: "rss",
+    color: "#181717",
+  },
+  {
+    name: "Spotify",
+    slug: "spotify",
+    logo: "https://cdn.simpleicons.org/spotify/1DB954",
+    website: "https://spotify.com",
+    blogUrl: "https://engineering.atspotify.com",
+    feedUrl: "https://engineering.atspotify.com/feed/",
+    feedType: "rss",
+    color: "#1DB954",
+  },
+  {
+    name: "Cloudflare",
+    slug: "cloudflare",
+    logo: "https://cdn.simpleicons.org/cloudflare/F38020",
+    website: "https://cloudflare.com",
+    blogUrl: "https://blog.cloudflare.com",
+    feedUrl: "https://blog.cloudflare.com/rss/",
+    feedType: "rss",
+    color: "#F38020",
+  },
+  {
+    name: "Stripe",
+    slug: "stripe",
+    logo: "https://cdn.simpleicons.org/stripe/635BFF",
+    website: "https://stripe.com",
+    blogUrl: "https://stripe.com/blog",
+    feedUrl: "https://stripe.com/blog/feed.rss",
+    feedType: "rss",
+    color: "#635BFF",
+  },
+  {
+    name: "AWS",
+    slug: "aws",
+    logo: "https://www.google.com/s2/favicons?domain=aws.amazon.com&sz=128",
+    website: "https://aws.amazon.com",
+    blogUrl: "https://aws.amazon.com/blogs/architecture",
+    feedUrl: "https://aws.amazon.com/blogs/architecture/feed/",
+    feedType: "rss",
+    color: "#FF9900",
+  },
+  {
+    name: "Dropbox",
+    slug: "dropbox",
+    logo: "https://cdn.simpleicons.org/dropbox/0061FF",
+    website: "https://dropbox.com",
+    blogUrl: "https://dropbox.tech",
+    feedUrl: "https://dropbox.tech/feed",
+    feedType: "rss",
+    color: "#0061FF",
+  },
+  {
+    name: "HashiCorp",
+    slug: "hashicorp",
+    logo: "https://cdn.simpleicons.org/hashicorp/000000",
+    website: "https://hashicorp.com",
+    blogUrl: "https://www.hashicorp.com/blog",
+    feedUrl: "https://www.hashicorp.com/blog/feed.xml",
+    feedType: "rss",
+    color: "#000000",
+  },
+  // ─── Indian Startups ───────────────────────────────────,
+  {
+    name: "CRED",
+    slug: "cred",
+    logo: "https://www.google.com/s2/favicons?domain=cred.club&sz=128",
+    website: "https://cred.club",
+    blogUrl: "https://engineering.cred.club",
+    feedUrl: "https://medium.com/feed/cred-engineering",
+    feedType: "rss",
+    color: "#1A1A2E",
+  },
+  {
+    name: "Razorpay",
+    slug: "razorpay",
+    logo: "https://cdn.simpleicons.org/razorpay/0C2451",
+    website: "https://razorpay.com",
+    blogUrl: "https://engineering.razorpay.com",
+    feedUrl: "https://engineering.razorpay.com/feed",
+    feedType: "rss",
+    color: "#0C2451",
+  },
+  {
+    name: "Zerodha",
+    slug: "zerodha",
+    logo: "https://cdn.simpleicons.org/zerodha/387ED1",
+    website: "https://zerodha.com",
+    blogUrl: "https://zerodha.tech",
+    feedUrl: "https://zerodha.tech/blog/index.xml",
+    feedType: "rss",
+    color: "#387ED1",
+  },
+  {
+    name: "Flipkart",
+    slug: "flipkart",
+    logo: "https://www.google.com/s2/favicons?domain=flipkart.com&sz=128",
+    website: "https://flipkart.com",
+    blogUrl: "https://blog.flipkart.tech",
+    feedUrl: "https://blog.flipkart.tech/feed",
+    feedType: "rss",
+    color: "#F7D03F",
+  },
+  {
+    name: "Swiggy",
+    slug: "swiggy",
+    logo: "https://cdn.simpleicons.org/swiggy/FC8019",
+    website: "https://swiggy.com",
+    blogUrl: "https://bytes.swiggy.com",
+    feedUrl: "https://medium.com/feed/swiggy-bytes",
+    feedType: "rss",
+    color: "#FC8019",
+  },
+  {
+    name: "Groww",
+    slug: "groww",
+    logo: "https://www.google.com/s2/favicons?domain=groww.in&sz=128",
+    website: "https://groww.in",
+    blogUrl: "https://tech.groww.in",
+    feedUrl: "https://tech.groww.in/feed",
+    feedType: "rss",
+    color: "#5367FF",
+  },
+];
+
+async function main() {
+  console.log("🌱 Seeding database...\n");
+
+  for (const company of COMPANIES) {
+    const result = await prisma.company.upsert({
+      where: { slug: company.slug },
+      create: company,
+      update: company,
+    });
+    console.log(`  ✅ ${result.name} (${result.slug})`);
+  }
+
+  // Deactivate companies that were removed from the config
+  const activeSlugs = COMPANIES.map((c) => c.slug);
+  const deactivated = await prisma.company.updateMany({
+    where: { slug: { notIn: activeSlugs } },
+    data: { isActive: false },
+  });
+  if (deactivated.count > 0) {
+    console.log(`\n  🗑️  Deactivated ${deactivated.count} removed companies`);
+  }
+
+  console.log(`\n🎉 Seeded ${COMPANIES.length} companies.`);
+}
+
+main()
+  .catch((e) => {
+    console.error("❌ Seed failed:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

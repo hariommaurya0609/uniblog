@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Company ──────────────────────────────────────────────
+// Represents a tech company whose blog we aggregate
+model Company {
+  id        String   @id @default(cuid())
+  name      String // e.g. "Netflix"
+  slug      String   @unique // e.g. "netflix"
+  logo      String // URL or path to company logo
+  website   String // e.g. "https://netflix.com"
+  blogUrl   String // e.g. "https://netflixtechblog.com"
+  feedUrl   String? // RSS/Atom feed URL (null if scraping)
+  feedType  String   @default("rss") // "rss" | "atom" | "scrape"
+  color     String   @default("#6366f1") // brand color for UI
+  isActive  Boolean  @default(true) // toggle scraping on/off
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles Article[]
+
+  @@map("companies")
+}
+
+// ─── Article ──────────────────────────────────────────────
+// A single blog post from a company
+model Article {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  author      String?
+  imageUrl    String?
+  originalUrl String   @unique // prevents duplicates
+  readTime    String? // e.g. "5 min read"
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  tags ArticleTag[]
+
+  @@index([companyId])
+  @@index([publishedAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@map("articles")
+}
+
+// ─── Tag ──────────────────────────────────────────────────
+// Categorization tags for articles
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  articles ArticleTag[]
+
+  @@map("tags")
+}
+
+// ─── ArticleTag (join table) ──────────────────────────────
+model ArticleTag {
+  articleId String
+  tagId     String
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@map("article_tags")
+}
