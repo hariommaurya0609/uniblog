@@ -6,6 +6,7 @@
 2. 🗄️ PostgreSQL database (choose one):
    - [Neon](https://neon.tech) - Recommended, free tier available
    - [Supabase](https://supabase.com) - Free tier available
+   - [AWS RDS](https://aws.amazon.com/rds/) - Enterprise-grade, scalable
    - [Railway](https://railway.app) - Easy setup
 
 ## Step 1: Set up PostgreSQL Database
@@ -30,6 +31,59 @@ DIRECT_URL=postgresql://user:password@ep-xyz.us-east-2.aws.neon.tech/uniblog?ssl
 2. Go to Settings → Database
 3. Copy **Connection pooling** URL for `DATABASE_URL`
 4. Copy **Connection string** URL for `DIRECT_URL`
+
+### Option C: AWS RDS PostgreSQL
+
+**1. Create RDS Instance:**
+1. Go to [AWS RDS Console](https://console.aws.amazon.com/rds/)
+2. Click **"Create database"**
+3. Choose:
+   - Engine: **PostgreSQL**
+   - Template: **Free tier** or **Production** (depending on your needs)
+   - DB instance identifier: `uniblog-db`
+   - Master username: `postgres` (or custom)
+   - Master password: (set secure password)
+4. Instance configuration:
+   - Instance class: `db.t3.micro` (free tier) or `db.t4g.micro`
+   - Storage: 20 GB (expandable)
+5. Connectivity:
+   - Public access: **Yes** (for Vercel to connect)
+   - VPC security group: Create new → Allow PostgreSQL (port 5432) from anywhere (0.0.0.0/0)
+6. Additional configuration:
+   - Initial database name: `uniblog`
+7. Click **"Create database"** (takes 5-10 minutes)
+
+**2. Get Connection String:**
+
+After database is created:
+1. Click on your database instance
+2. Copy the **Endpoint** (e.g., `uniblog-db.abc123.us-east-1.rds.amazonaws.com`)
+3. Build connection strings:
+
+```env
+# For both DATABASE_URL and DIRECT_URL use:
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@uniblog-db.abc123.us-east-1.rds.amazonaws.com:5432/uniblog?sslmode=require
+DIRECT_URL=postgresql://postgres:YOUR_PASSWORD@uniblog-db.abc123.us-east-1.rds.amazonaws.com:5432/uniblog?sslmode=require
+```
+
+Replace:
+- `YOUR_PASSWORD` with your master password
+- `uniblog-db.abc123.us-east-1.rds.amazonaws.com` with your actual endpoint
+
+**3. Configure Security Group:**
+
+Make sure port 5432 is open:
+1. Go to EC2 → Security Groups
+2. Find your RDS security group
+3. Inbound rules → Add rule:
+   - Type: PostgreSQL
+   - Port: 5432
+   - Source: 0.0.0.0/0 (or Vercel IPs for better security)
+
+**Important Notes:**
+- AWS RDS is **NOT free** after 12 months free tier expires (~$15-20/month for db.t3.micro)
+- For production, consider using connection pooling with [RDS Proxy](https://aws.amazon.com/rds/proxy/)
+- Enable automated backups for production databases
 
 ## Step 2: Deploy to Vercel
 
