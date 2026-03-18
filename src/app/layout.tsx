@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 export const metadata: Metadata = {
   title: "UniBlog — All Tech Blogs in One Place",
   description:
-    "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and 10+ more companies — all in one unified feed.",
+    "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and 100+ more companies — all in one unified feed.",
   keywords: [
     "tech blog",
     "engineering blog",
@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     description:
       "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and more.",
     type: "website",
+  },
+  icons: {
+    icon: "/icon",
+    apple: "/apple-icon",
   },
 };
 

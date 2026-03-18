@@ -1,16 +1,16 @@
 # UniBlog — All Tech Blogs in One Place 🚀
 
-A tech blog aggregator that brings engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, Cloudflare, and many more into one unified feed.
+A tech blog aggregator that brings engineering blogs from **108 companies** including Netflix, Uber, Airbnb, Meta, Google, Microsoft, AWS, Datadog, MongoDB, and many more into one unified feed.
 
-## 🎯 What It Does
+## 🎯 Features
 
-As developers, we all read engineering blogs from top tech companies — but visiting each site individually is time-consuming. UniBlog solves this by:
-
-- **Aggregating** 15+ company engineering blogs into one feed
-- **Displaying** article image, title, description, author, and read time
-- **Redirecting** users to the original blog post on click
-- **Filtering** by company and searching across all articles
-- **Auto-scraping** new articles every hour via cron
+- **📚 108 Companies**: Aggregates blogs from FAANG, unicorns, and top tech companies worldwide
+- **🔍 Smart Search**: Search by article title, description, author, or company name
+- **🏷️ Company Filter**: Filter by any of the 108 companies with article counts
+- **🌓 Dark Mode**: Beautiful light and dark themes
+- **📱 Responsive**: Works perfectly on mobile, tablet, and desktop
+- **🔄 Auto-Sync**: Automatically scrapes new articles (limited to 100 most recent per company)
+- **⚡ Fast**: Server-side rendering with infinite scroll and lazy loading
 
 ## 🛠️ Tech Stack
 
@@ -108,7 +108,57 @@ npm run dev
 
 Visit **http://localhost:3000** 🎉
 
-## 📡 API Endpoints
+## � Deploy to Vercel
+
+### 1. Push to GitHub
+
+```bash
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/hariommaurya0609/uniblog.git
+git push -u origin main
+```
+
+### 2. Set up PostgreSQL Database
+
+Create a PostgreSQL database on [Neon](https://neon.tech), [Supabase](https://supabase.com), or [Railway](https://railway.app).
+
+Get two connection strings:
+
+- **Pooled connection URL** (for queries) → `DATABASE_URL`
+- **Direct connection URL** (for migrations) → `DIRECT_URL`
+
+### 3. Deploy to Vercel
+
+1. Go to [Vercel](https://vercel.com) and import your GitHub repo
+2. Add environment variables:
+   ```
+   DATABASE_URL=postgresql://user:password@host:5432/database
+   DIRECT_URL=postgresql://user:password@host:5432/database
+   NODE_TLS_REJECT_UNAUTHORIZED=0
+   ```
+3. Deploy! 🎉
+
+The build command in `vercel.json` automatically:
+
+- Generates Prisma client
+- Pushes schema to database
+- Builds the Next.js app
+
+### 4. Seed the Database
+
+After first deploy, run locally:
+
+```bash
+# Set Vercel's DATABASE_URL
+export DATABASE_URL="your-production-url"
+npx prisma db seed
+```
+
+Or use Vercel's terminal in the dashboard.
+
+## �📡 API Endpoints
 
 ### `GET /api/articles`
 

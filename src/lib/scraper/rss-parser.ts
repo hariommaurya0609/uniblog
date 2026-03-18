@@ -175,6 +175,16 @@ export async function parseRssFeed(feedUrl: string): Promise<ArticleItem[]> {
       ? estimateReadTime(stripHtml(String(fullContent)))
       : null;
 
+    // Resolve relative image URLs (e.g. /img/foo.png → https://domain.com/img/foo.png)
+    if (imageUrl && imageUrl.startsWith("/") && item.link) {
+      try {
+        const base = new URL(item.link);
+        imageUrl = `${base.protocol}//${base.host}${imageUrl}`;
+      } catch {
+        /* ignore invalid URLs */
+      }
+    }
+
     return {
       title: item.title?.trim() || "Untitled",
       description,

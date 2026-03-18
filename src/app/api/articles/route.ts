@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
  *  - page (default: 1)
  *  - limit (default: 20, max: 50)
  *  - company (slug filter)
- *  - search (full-text search on title/description)
+ *  - search (full-text search on title/description/author/company)
  *  - sort (publishedAt | createdAt, default: publishedAt)
  *  - order (asc | desc, default: desc)
  */
@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         { title: { contains: search } },
         { description: { contains: search } },
         { author: { contains: search } },
+        { company: { name: { contains: search } } },
       ];
     }
 

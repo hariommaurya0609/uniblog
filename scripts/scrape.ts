@@ -8,173 +8,9 @@ import { PrismaClient } from "@prisma/client";
 import RssParser from "rss-parser";
 import https from "https";
 import http from "http";
+import { COMPANY_CONFIGS } from "../src/lib/scraper/companies.config";
 
 const prisma = new PrismaClient();
-
-const COMPANY_CONFIGS = [
-  // ─── Global Companies ──────────────────────────────────,
-  {
-    name: "Netflix",
-    slug: "netflix",
-    logo: "https://cdn.simpleicons.org/netflix/E50914",
-    website: "https://netflix.com",
-    blogUrl: "https://netflixtechblog.com",
-    feedUrl: "https://medium.com/feed/netflix-techblog",
-    feedType: "rss",
-    color: "#E50914",
-  },
-  {
-    name: "Airbnb",
-    slug: "airbnb",
-    logo: "https://cdn.simpleicons.org/airbnb/FF5A5F",
-    website: "https://airbnb.com",
-    blogUrl: "https://medium.com/airbnb-engineering",
-    feedUrl: "https://medium.com/feed/airbnb-engineering",
-    feedType: "rss",
-    color: "#FF5A5F",
-  },
-  {
-    name: "Meta",
-    slug: "meta",
-    logo: "https://cdn.simpleicons.org/meta/0081FB",
-    website: "https://meta.com",
-    blogUrl: "https://engineering.fb.com",
-    feedUrl: "https://engineering.fb.com/feed/",
-    feedType: "rss",
-    color: "#0081FB",
-  },
-  {
-    name: "GitHub",
-    slug: "github",
-    logo: "https://cdn.simpleicons.org/github/181717",
-    website: "https://github.com",
-    blogUrl: "https://github.blog/engineering",
-    feedUrl: "https://github.blog/engineering/feed/",
-    feedType: "rss",
-    color: "#181717",
-  },
-  {
-    name: "Spotify",
-    slug: "spotify",
-    logo: "https://cdn.simpleicons.org/spotify/1DB954",
-    website: "https://spotify.com",
-    blogUrl: "https://engineering.atspotify.com",
-    feedUrl: "https://engineering.atspotify.com/feed/",
-    feedType: "rss",
-    color: "#1DB954",
-  },
-  {
-    name: "Cloudflare",
-    slug: "cloudflare",
-    logo: "https://cdn.simpleicons.org/cloudflare/F38020",
-    website: "https://cloudflare.com",
-    blogUrl: "https://blog.cloudflare.com",
-    feedUrl: "https://blog.cloudflare.com/rss/",
-    feedType: "rss",
-    color: "#F38020",
-  },
-  {
-    name: "Stripe",
-    slug: "stripe",
-    logo: "https://cdn.simpleicons.org/stripe/635BFF",
-    website: "https://stripe.com",
-    blogUrl: "https://stripe.com/blog",
-    feedUrl: "https://stripe.com/blog/feed.rss",
-    feedType: "rss",
-    color: "#635BFF",
-  },
-  {
-    name: "AWS",
-    slug: "aws",
-    logo: "https://www.google.com/s2/favicons?domain=aws.amazon.com&sz=128",
-    website: "https://aws.amazon.com",
-    blogUrl: "https://aws.amazon.com/blogs/architecture",
-    feedUrl: "https://aws.amazon.com/blogs/architecture/feed/",
-    feedType: "rss",
-    color: "#FF9900",
-  },
-  {
-    name: "Dropbox",
-    slug: "dropbox",
-    logo: "https://cdn.simpleicons.org/dropbox/0061FF",
-    website: "https://dropbox.com",
-    blogUrl: "https://dropbox.tech",
-    feedUrl: "https://dropbox.tech/feed",
-    feedType: "rss",
-    color: "#0061FF",
-  },
-  {
-    name: "HashiCorp",
-    slug: "hashicorp",
-    logo: "https://cdn.simpleicons.org/hashicorp/000000",
-    website: "https://hashicorp.com",
-    blogUrl: "https://www.hashicorp.com/blog",
-    feedUrl: "https://www.hashicorp.com/blog/feed.xml",
-    feedType: "rss",
-    color: "#000000",
-  },
-  // ─── Indian Startups ───────────────────────────────────,
-  {
-    name: "CRED",
-    slug: "cred",
-    logo: "https://www.google.com/s2/favicons?domain=cred.club&sz=128",
-    website: "https://cred.club",
-    blogUrl: "https://engineering.cred.club",
-    feedUrl: "https://medium.com/feed/cred-engineering",
-    feedType: "rss",
-    color: "#1A1A2E",
-  },
-  {
-    name: "Razorpay",
-    slug: "razorpay",
-    logo: "https://cdn.simpleicons.org/razorpay/0C2451",
-    website: "https://razorpay.com",
-    blogUrl: "https://engineering.razorpay.com",
-    feedUrl: "https://engineering.razorpay.com/feed",
-    feedType: "rss",
-    color: "#0C2451",
-  },
-  {
-    name: "Zerodha",
-    slug: "zerodha",
-    logo: "https://cdn.simpleicons.org/zerodha/387ED1",
-    website: "https://zerodha.com",
-    blogUrl: "https://zerodha.tech",
-    feedUrl: "https://zerodha.tech/blog/index.xml",
-    feedType: "rss",
-    color: "#387ED1",
-  },
-  {
-    name: "Flipkart",
-    slug: "flipkart",
-    logo: "https://www.google.com/s2/favicons?domain=flipkart.com&sz=128",
-    website: "https://flipkart.com",
-    blogUrl: "https://blog.flipkart.tech",
-    feedUrl: "https://blog.flipkart.tech/feed",
-    feedType: "rss",
-    color: "#F7D03F",
-  },
-  {
-    name: "Swiggy",
-    slug: "swiggy",
-    logo: "https://cdn.simpleicons.org/swiggy/FC8019",
-    website: "https://swiggy.com",
-    blogUrl: "https://bytes.swiggy.com",
-    feedUrl: "https://medium.com/feed/swiggy-bytes",
-    feedType: "rss",
-    color: "#FC8019",
-  },
-  {
-    name: "Groww",
-    slug: "groww",
-    logo: "https://www.google.com/s2/favicons?domain=groww.in&sz=128",
-    website: "https://groww.in",
-    blogUrl: "https://tech.groww.in",
-    feedUrl: "https://tech.groww.in/feed",
-    feedType: "rss",
-    color: "#5367FF",
-  },
-];
 
 const parser = new RssParser({
   timeout: 15_000,
@@ -208,6 +44,18 @@ function estimateReadTime(text: string): string | null {
   return minutes > 0 ? `${minutes} min read` : null;
 }
 
+/** Race a promise against a timeout */
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  fallback: T,
+): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
 /**
  * Fetch og:image from a URL by loading the page HTML and extracting the meta tag.
  */
@@ -229,7 +77,7 @@ async function fetchOgImage(pageUrl: string): Promise<string | null> {
               Accept: "text/html",
             },
             rejectUnauthorized: false,
-            timeout: 10000,
+            timeout: 5000,
           } as Parameters<typeof https.get>[1],
           (res) => {
             if (
@@ -266,7 +114,7 @@ async function fetchOgImage(pageUrl: string): Promise<string | null> {
       });
     };
 
-    const html = await fetchPage(pageUrl);
+    const html = await withTimeout(fetchPage(pageUrl), 6000, null);
     if (!html) return null;
 
     const ogMatch = html.match(
@@ -325,8 +173,13 @@ async function main() {
     }
 
     try {
-      const feed = await parser.parseURL(company.feedUrl);
-      const articles = feed.items || [];
+      const feed = await withTimeout(
+        parser.parseURL(company.feedUrl),
+        20_000,
+        null as Awaited<ReturnType<typeof parser.parseURL>> | null,
+      );
+      if (!feed) throw new Error("Feed fetch timed out");
+      const articles = (feed.items || []).slice(0, 100); // Limit to 100 most recent articles
       totalFound += articles.length;
       let newCount = 0;
 
@@ -354,6 +207,16 @@ async function main() {
               /<img[^>]+src=["']?([^"'\s>]+)["']?/i,
             );
             if (imgMatch?.[1]) imageUrl = imgMatch[1];
+          }
+
+          // Resolve relative image URLs (e.g. /img/foo.png → https://domain.com/img/foo.png)
+          if (imageUrl && imageUrl.startsWith("/") && url) {
+            try {
+              const base = new URL(url);
+              imageUrl = `${base.protocol}//${base.host}${imageUrl}`;
+            } catch {
+              /* ignore */
+            }
           }
 
           // Strategy 4: Fetch og:image from article page
