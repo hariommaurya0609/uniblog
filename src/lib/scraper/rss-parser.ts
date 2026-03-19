@@ -127,10 +127,11 @@ export async function parseRssFeed(feedUrl: string): Promise<ArticleItem[]> {
     }
 
     // Strategy 2: media:content or media:thumbnail
-    const mediaContent = (item as Record<string, unknown>).mediaContent as
+    const itemRecord = item as unknown as Record<string, unknown>;
+    const mediaContent = itemRecord.mediaContent as
       | { $?: { url?: string } }
       | undefined;
-    const mediaThumbnail = (item as Record<string, unknown>).mediaThumbnail as
+    const mediaThumbnail = itemRecord.mediaThumbnail as
       | { $?: { url?: string } }
       | undefined;
 
@@ -144,7 +145,7 @@ export async function parseRssFeed(feedUrl: string): Promise<ArticleItem[]> {
     // Strategy 3: Extract first <img> from content/description
     if (!imageUrl) {
       const contentHtml =
-        ((item as Record<string, unknown>).contentEncoded as string) ||
+        (itemRecord.contentEncoded as string) ||
         item.content ||
         item["content:encoded"] ||
         "";
@@ -167,7 +168,7 @@ export async function parseRssFeed(feedUrl: string): Promise<ArticleItem[]> {
 
     // --- Estimate read time ---
     const fullContent =
-      ((item as Record<string, unknown>).contentEncoded as string) ||
+      (itemRecord.contentEncoded as string) ||
       item.content ||
       item["content:encoded"] ||
       "";
@@ -190,7 +191,7 @@ export async function parseRssFeed(feedUrl: string): Promise<ArticleItem[]> {
       description,
       author:
         item.creator ||
-        ((item as Record<string, unknown>).dcCreator as string) ||
+        (itemRecord.dcCreator as string) ||
         null,
       imageUrl,
       originalUrl: item.link || "",
