@@ -18,14 +18,6 @@ export function Header() {
         {/* Nav */}
         <nav className="flex items-center gap-3">
           <ThemeToggle />
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
-          >
-            GitHub
-          </a>
         </nav>
       </div>
     </header>

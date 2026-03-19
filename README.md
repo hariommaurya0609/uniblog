@@ -1,6 +1,8 @@
-# UniBlog — All Tech Blogs in One Place 🚀
+# UniBlog — All Tech Blogs in One Place
 
-A tech blog aggregator that brings engineering blogs from **108 companies** including Netflix, Uber, Airbnb, Meta, Google, Microsoft, AWS, Datadog, MongoDB, and many more into one unified feed.
+**GitHub:** https://github.com/hariommaurya0609/uniblog
+
+A tech blog aggregator that brings engineering blogs from **108 companies** including Netflix, Uber, Airbnb, Meta, Google, Microsoft, AWS, Cloudflare, Vercel, Supabase, and many more into one unified feed.
 
 ## 🎯 Features
 
@@ -19,10 +21,10 @@ A tech blog aggregator that brings engineering blogs from **108 companies** incl
 | Frontend   | Next.js 15 (App Router), React 19 |
 | Styling    | Tailwind CSS v4                   |
 | Backend    | Next.js API Routes                |
-| Database   | SQLite (dev) / PostgreSQL (prod)  |
-| ORM        | Prisma                            |
+| Database   | Supabase (PostgreSQL 17)          |
+| ORM        | Prisma 6                          |
 | Scraping   | rss-parser + cheerio              |
-| Deployment | Vercel + Vercel Cron              |
+| Deployment | Vercel + Vercel Cron (daily)      |
 | Icons      | Lucide React                      |
 
 ## 📂 Project Structure
@@ -73,30 +75,32 @@ uniblog/
 npm install
 ```
 
-### 2. Set up the database
+### 2. Set up environment variables
 
-```bash
-# Create the .env file
-cp .env.example .env
+Create a `.env` file:
 
-# Generate Prisma client & push schema to SQLite
-npx prisma generate
-npx prisma db push
+```env
+# Transaction pooler (app runtime)
+DATABASE_URL="postgresql://postgres.<ref>:<password>@<host>:6543/postgres?pgbouncer=true"
+# Direct connection (migrations)
+DIRECT_URL="postgresql://postgres.<ref>:<password>@<host>:5432/postgres"
+CRON_SECRET="your-secret"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-### 3. Seed companies
+> Get both URLs from your Supabase project → Settings → Database.
+
+### 3. Push schema and seed companies
 
 ```bash
+npx prisma db push
 npm run db:seed
 ```
 
-### 4. Scrape articles
+### 4. Scrape initial articles
 
 ```bash
-# Dry run (just see what would be scraped)
-npm run scrape:dry
-
-# Actually scrape and save articles
+# Fetches articles from all 108 companies (~5-10 min)
 npm run scrape
 ```
 
@@ -110,53 +114,42 @@ Visit **http://localhost:3000** 🎉
 
 ## � Deploy to Vercel
 
-### 1. Push to GitHub
+### 1. Create a PostgreSQL database
+
+Use [Supabase](https://supabase.com) (recommended), [Neon](https://neon.tech), or [Railway](https://railway.app).
+
+### 2. Set environment variables in Vercel
+
+Go to your Vercel project → Settings → Environment Variables:
+
+| Variable                       | Value                                           |
+| ------------------------------ | ----------------------------------------------- |
+| `DATABASE_URL`                 | Transaction pooler URL (port 6543 for Supabase) |
+| `DIRECT_URL`                   | Session/direct URL (port 5432 for Supabase)     |
+| `CRON_SECRET`                  | A random secret string                          |
+| `NEXT_PUBLIC_APP_URL`          | Your Vercel deployment URL                      |
+| `NODE_TLS_REJECT_UNAUTHORIZED` | `0` (required for Supabase SSL)                 |
+
+### 3. Deploy
+
+Push to `main` — Vercel auto-deploys:
 
 ```bash
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/hariommaurya0609/uniblog.git
-git push -u origin main
+git push origin main
 ```
 
-### 2. Set up PostgreSQL Database
+### 4. Seed the production database
 
-Create a PostgreSQL database on [Neon](https://neon.tech), [Supabase](https://supabase.com), or [Railway](https://railway.app).
-
-Get two connection strings:
-
-- **Pooled connection URL** (for queries) → `DATABASE_URL`
-- **Direct connection URL** (for migrations) → `DIRECT_URL`
-
-### 3. Deploy to Vercel
-
-1. Go to [Vercel](https://vercel.com) and import your GitHub repo
-2. Add environment variables:
-   ```
-   DATABASE_URL=postgresql://user:password@host:5432/database
-   DIRECT_URL=postgresql://user:password@host:5432/database
-   NODE_TLS_REJECT_UNAUTHORIZED=0
-   ```
-3. Deploy! 🎉
-
-The build command in `vercel.json` automatically:
-
-- Generates Prisma client
-- Pushes schema to database
-- Builds the Next.js app
-
-### 4. Seed the Database
-
-After first deploy, run locally:
+Run once after first deploy:
 
 ```bash
-# Set Vercel's DATABASE_URL
-export DATABASE_URL="your-production-url"
-npx prisma db seed
+DATABASE_URL="your-production-url" npx prisma db seed
+npm run scrape
 ```
 
-Or use Vercel's terminal in the dashboard.
+### Cron Job
+
+`vercel.json` runs the scraper every day at 2am UTC automatically (Vercel Hobby plan).
 
 ## �📡 API Endpoints
 
