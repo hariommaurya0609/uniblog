@@ -48,8 +48,8 @@ model Article {
 
   tags ArticleTag[]
 
-  @@index([companyId])
-  @@index([publishedAt(sort: Desc)])
+  @@index([companyId, publishedAt(sort: Desc)]) // Most common query: articles by company sorted by date
+  @@index([publishedAt(sort: Desc)])             // Global feed sorted by date
   @@index([createdAt(sort: Desc)])
   @@map("articles")
 }
