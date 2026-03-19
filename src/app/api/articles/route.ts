@@ -41,7 +41,15 @@ export async function GET(request: NextRequest) {
         { title: { contains: search, mode: "insensitive" as const } },
         { description: { contains: search, mode: "insensitive" as const } },
         { author: { contains: search, mode: "insensitive" as const } },
-        ...(company ? [] : [{ company: { name: { contains: search, mode: "insensitive" as const } } }]),
+        ...(company
+          ? []
+          : [
+              {
+                company: {
+                  name: { contains: search, mode: "insensitive" as const },
+                },
+              },
+            ]),
       ];
 
       if (company) {
@@ -74,7 +82,7 @@ export async function GET(request: NextRequest) {
 
     const totalPages = Math.ceil(total / limit);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       data: articles,
       pagination: {
         page,
@@ -85,6 +93,16 @@ export async function GET(request: NextRequest) {
         hasPrev: page > 1,
       },
     });
+
+    // Cache non-search requests at the CDN edge for 60s to absorb repeated hits
+    if (!search) {
+      response.headers.set(
+        "Cache-Control",
+        "public, s-maxage=60, stale-while-revalidate=300",
+      );
+    }
+
+    return response;
   } catch (error) {
     console.error("GET /api/articles error:", error);
     return NextResponse.json(
