@@ -82,8 +82,12 @@ export default function HomePage() {
   // Fetch articles when filters change — cancels in-flight requests via AbortController
   const fetchArticles = useCallback(
     async (page = 1, append = false, signal?: AbortSignal) => {
-      if (page === 1) setLoading(true);
-      else setLoadingMore(true);
+      if (page === 1) {
+        setLoading(true);
+        setArticles([]); // Clear stale results so skeleton renders immediately
+      } else {
+        setLoadingMore(true);
+      }
 
       try {
         const params = new URLSearchParams({
@@ -105,11 +109,14 @@ export default function HomePage() {
         }
         setPagination(data.pagination || null);
       } catch (error) {
-        if ((error as Error).name === "AbortError") return; // Ignore cancelled requests
+        if ((error as Error).name === "AbortError") return; // Request was cancelled — don't touch loading state
         console.error("Failed to fetch articles:", error);
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
+        // Only clear loading if this request wasn't aborted
+        if (!signal?.aborted) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     },
     [selectedCompany, debouncedSearch],
