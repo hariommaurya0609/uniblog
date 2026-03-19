@@ -38,10 +38,10 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       const searchConditions = [
-        { title: { contains: search } },
-        { description: { contains: search } },
-        { author: { contains: search } },
-        ...(company ? [] : [{ company: { name: { contains: search } } }]),
+        { title: { contains: search, mode: "insensitive" as const } },
+        { description: { contains: search, mode: "insensitive" as const } },
+        { author: { contains: search, mode: "insensitive" as const } },
+        ...(company ? [] : [{ company: { name: { contains: search, mode: "insensitive" as const } } }]),
       ];
 
       if (company) {
