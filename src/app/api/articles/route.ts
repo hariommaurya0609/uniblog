@@ -52,26 +52,25 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Execute query + count in parallel
-    const [articles, total] = await Promise.all([
-      prisma.article.findMany({
-        where,
-        include: {
-          company: {
-            select: {
-              name: true,
-              slug: true,
-              logo: true,
-              color: true,
-            },
+    // Run sequentially — pgBouncer transaction mode releases connections after each statement
+    // Running in parallel with connection_limit would exhaust the pool
+    const total = await prisma.article.count({ where });
+    const articles = await prisma.article.findMany({
+      where,
+      include: {
+        company: {
+          select: {
+            name: true,
+            slug: true,
+            logo: true,
+            color: true,
           },
         },
-        orderBy: { [sort]: order },
-        skip,
-        take: limit,
-      }),
-      prisma.article.count({ where }),
-    ]);
+      },
+      orderBy: { [sort]: order },
+      skip,
+      take: limit,
+    });
 
     const totalPages = Math.ceil(total / limit);
 
