@@ -6,6 +6,8 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ value, onChange }: SearchBarProps) {
+  const showHint = value.trim().length === 1;
+
   return (
     <div className="relative w-full sm:w-80">
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -23,6 +25,11 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         >
           ✕
         </button>
+      )}
+      {showHint && (
+        <p className="absolute left-0 top-full mt-1 text-xs text-gray-400">
+          Type at least 2 characters to search
+        </p>
       )}
     </div>
   );

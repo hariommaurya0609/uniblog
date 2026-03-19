@@ -53,9 +53,21 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Debounce search input
+  // Debounce search: wait 500ms after user stops typing, require >= 2 chars
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    const trimmed = searchQuery.trim();
+    // Clear immediately when input is empty
+    if (trimmed === "") {
+      setDebouncedSearch("");
+      return;
+    }
+    // Don't fire for single characters — wait for more input
+    if (trimmed.length < 2) return;
+
+    const timer = setTimeout(() => {
+      setDebouncedSearch(trimmed);
+      setSelectedCompany(null); // Global search clears company filter
+    }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -67,9 +79,9 @@ export default function HomePage() {
       .catch(console.error);
   }, []);
 
-  // Fetch articles when filters change
+  // Fetch articles when filters change — cancels in-flight requests via AbortController
   const fetchArticles = useCallback(
-    async (page = 1, append = false) => {
+    async (page = 1, append = false, signal?: AbortSignal) => {
       if (page === 1) setLoading(true);
       else setLoadingMore(true);
 
@@ -82,7 +94,8 @@ export default function HomePage() {
         if (selectedCompany) params.set("company", selectedCompany);
         if (debouncedSearch) params.set("search", debouncedSearch);
 
-        const res = await fetch(`/api/articles?${params}`);
+        const res = await fetch(`/api/articles?${params}`, { signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
         if (append) {
@@ -92,6 +105,7 @@ export default function HomePage() {
         }
         setPagination(data.pagination || null);
       } catch (error) {
+        if ((error as Error).name === "AbortError") return; // Ignore cancelled requests
         console.error("Failed to fetch articles:", error);
       } finally {
         setLoading(false);
@@ -102,7 +116,9 @@ export default function HomePage() {
   );
 
   useEffect(() => {
-    fetchArticles(1, false);
+    const controller = new AbortController();
+    fetchArticles(1, false, controller.signal);
+    return () => controller.abort(); // Cancel request if filters change before it completes
   }, [fetchArticles]);
 
   const handleLoadMore = () => {
@@ -113,6 +129,7 @@ export default function HomePage() {
 
   const handleCompanySelect = (slug: string | null) => {
     setSelectedCompany(slug);
+    setSearchQuery(""); // Clear search when changing company
   };
 
   const totalArticles = pagination?.total ?? 0;

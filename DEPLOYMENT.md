@@ -20,6 +20,7 @@
    - **Direct connection** (for migrations) → `DIRECT_URL`
 
 Example:
+
 ```
 DATABASE_URL=postgresql://user:password@ep-xyz.us-east-2.aws.neon.tech/uniblog?sslmode=require
 DIRECT_URL=postgresql://user:password@ep-xyz.us-east-2.aws.neon.tech/uniblog?sslmode=require
@@ -35,6 +36,7 @@ DIRECT_URL=postgresql://user:password@ep-xyz.us-east-2.aws.neon.tech/uniblog?ssl
 ### Option C: AWS RDS PostgreSQL
 
 **1. Create RDS Instance:**
+
 1. Go to [AWS RDS Console](https://console.aws.amazon.com/rds/)
 2. Click **"Create database"**
 3. Choose:
@@ -56,6 +58,7 @@ DIRECT_URL=postgresql://user:password@ep-xyz.us-east-2.aws.neon.tech/uniblog?ssl
 **2. Get Connection String:**
 
 After database is created:
+
 1. Click on your database instance
 2. Copy the **Endpoint** (e.g., `uniblog-db.abc123.us-east-1.rds.amazonaws.com`)
 3. Build connection strings:
@@ -67,12 +70,14 @@ DIRECT_URL=postgresql://postgres:YOUR_PASSWORD@uniblog-db.abc123.us-east-1.rds.a
 ```
 
 Replace:
+
 - `YOUR_PASSWORD` with your master password
 - `uniblog-db.abc123.us-east-1.rds.amazonaws.com` with your actual endpoint
 
 **3. Configure Security Group:**
 
 Make sure port 5432 is open:
+
 1. Go to EC2 → Security Groups
 2. Find your RDS security group
 3. Inbound rules → Add rule:
@@ -81,6 +86,7 @@ Make sure port 5432 is open:
    - Source: 0.0.0.0/0 (or Vercel IPs for better security)
 
 **Important Notes:**
+
 - AWS RDS is **NOT free** after 12 months free tier expires (~$15-20/month for db.t3.micro)
 - For production, consider using connection pooling with [RDS Proxy](https://aws.amazon.com/rds/proxy/)
 - Enable automated backups for production databases
@@ -105,6 +111,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
 
 **How to add:**
+
 1. In Vercel dashboard → Project Settings → Environment Variables
 2. Add each variable for all environments (Production, Preview, Development)
 
@@ -197,6 +204,7 @@ Make sure you added `DATABASE_URL` and `DIRECT_URL` to Vercel environment variab
 ### Prisma schema push fails
 
 Check your PostgreSQL connection strings are correct. Test locally with:
+
 ```bash
 export DATABASE_URL="your-connection-string"
 npx prisma db push
@@ -209,6 +217,7 @@ Run the seed and scrape commands as shown in Steps 3 & 4.
 ### Scraper timing out
 
 This is normal for first scrape. Run locally with:
+
 ```bash
 NODE_TLS_REJECT_UNAUTHORIZED=0 npm run scrape
 ```
@@ -222,6 +231,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 npm run scrape
 ## Success! 🎉
 
 Your UniBlog is now live with:
+
 - ✅ 108 tech company blogs
 - ✅ Search by company, article, author
 - ✅ Dark mode

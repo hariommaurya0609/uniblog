@@ -37,12 +37,19 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      where.OR = [
+      const searchConditions = [
         { title: { contains: search } },
         { description: { contains: search } },
         { author: { contains: search } },
-        { company: { name: { contains: search } } },
+        ...(company ? [] : [{ company: { name: { contains: search } } }]),
       ];
+
+      if (company) {
+        // When company filter is active, search only within that company's articles
+        where.AND = [{ OR: searchConditions }];
+      } else {
+        where.OR = searchConditions;
+      }
     }
 
     // Execute query + count in parallel
