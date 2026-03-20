@@ -27,17 +27,17 @@ export function ArticleCard({ article }: ArticleCardProps) {
       href={article.originalUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="article-card group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+      className="article-card group flex gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 sm:gap-5"
     >
-      {/* Image */}
-      <div className="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
+      {/* Thumbnail */}
+      <div className="relative hidden h-28 w-44 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 sm:block">
         {article.imageUrl ? (
           <Image
             src={article.imageUrl}
             alt={article.title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="176px"
             unoptimized
           />
         ) : (
@@ -48,58 +48,70 @@ export function ArticleCard({ article }: ArticleCardProps) {
             <Image
               src={article.company.logo}
               alt={article.company.name}
-              width={48}
-              height={48}
+              width={32}
+              height={32}
               className="opacity-40"
               unoptimized
             />
           </div>
         )}
-
-        {/* Company badge */}
-        <div className="absolute left-3 top-3">
+        {/* Company badge on image */}
+        <div className="absolute left-2 top-2">
           <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-white shadow-lg backdrop-blur-sm"
+            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium text-white shadow-sm backdrop-blur-sm"
             style={{ backgroundColor: article.company.color + "CC" }}
           >
             <Image
               src={article.company.logo}
               alt={article.company.name}
-              width={14}
-              height={14}
+              width={12}
+              height={12}
               className="brightness-0 invert"
               unoptimized
             />
             {article.company.name}
           </span>
         </div>
-
-        {/* External link icon */}
-        <div className="absolute right-3 top-3 rounded-full bg-black/20 p-1.5 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-          <ExternalLink className="h-3.5 w-3.5 text-white" />
-        </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-4">
-        {/* Title */}
-        <h3 className="line-clamp-2 text-base font-semibold leading-snug text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
-          {article.title}
-        </h3>
+      <div className="flex min-w-0 flex-1 flex-col justify-between">
+        {/* Top: Company (mobile only) + Title */}
+        <div>
+          {/* Company badge — mobile only (no image visible) */}
+          <div className="mb-1.5 flex items-center gap-2 sm:hidden">
+            <Image
+              src={article.company.logo}
+              alt={article.company.name}
+              width={16}
+              height={16}
+              className="shrink-0 rounded-sm"
+              unoptimized
+            />
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              {article.company.name}
+            </span>
+          </div>
 
-        {/* Description */}
-        {article.description && (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-            {article.description}
-          </p>
-        )}
+          {/* Title */}
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+            {article.title}
+          </h3>
 
-        {/* Meta row */}
-        <div className="mt-auto flex items-center gap-3 pt-4 text-xs text-gray-500 dark:text-gray-500">
+          {/* Description */}
+          {article.description && (
+            <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+              {article.description}
+            </p>
+          )}
+        </div>
+
+        {/* Bottom: Meta row */}
+        <div className="mt-2 flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
           {article.author && (
             <span className="flex items-center gap-1">
               <User className="h-3 w-3" />
-              <span className="max-w-[120px] truncate">{article.author}</span>
+              <span className="max-w-30 truncate">{article.author}</span>
             </span>
           )}
           {article.readTime && (
@@ -108,9 +120,8 @@ export function ArticleCard({ article }: ArticleCardProps) {
               {article.readTime}
             </span>
           )}
-          {article.publishedAt && (
-            <span className="ml-auto">{timeAgo(article.publishedAt)}</span>
-          )}
+          {article.publishedAt && <span>{timeAgo(article.publishedAt)}</span>}
+          <ExternalLink className="ml-auto h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
       </div>
     </a>

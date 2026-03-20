@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { CompanyFilter } from "@/components/CompanyFilter";
@@ -128,11 +128,30 @@ export default function HomePage() {
     return () => controller.abort(); // Cancel request if filters change before it completes
   }, [fetchArticles]);
 
-  const handleLoadMore = () => {
-    if (pagination?.hasNext) {
-      fetchArticles(pagination.page + 1, true);
-    }
-  };
+  // Infinite scroll — load more when sentinel is visible
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          pagination?.hasNext &&
+          !loadingMore &&
+          !loading
+        ) {
+          fetchArticles(pagination.page + 1, true);
+        }
+      },
+      { rootMargin: "400px" },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [pagination, loadingMore, loading, fetchArticles]);
 
   const handleCompanySelect = (slug: string | null) => {
     setSelectedCompany(slug);
@@ -145,110 +164,111 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Header />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Search & Stats */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {selectedCompany
-                ? `${companies.find((c) => c.slug === selectedCompany)?.name ?? "Company"} Articles`
-                : "Latest Articles"}
-            </h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {totalArticles.toLocaleString()} article
-              {totalArticles !== 1 ? "s" : ""}{" "}
-              {selectedCompany
-                ? `from ${companies.find((c) => c.slug === selectedCompany)?.name ?? selectedCompany}`
-                : `from ${companies.length} companies`}
-            </p>
-          </div>
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
-        </div>
-
-        {/* Company Filter */}
-        <CompanyFilter
-          companies={companies}
-          selected={selectedCompany}
-          onSelect={handleCompanySelect}
-        />
-
-        {/* Articles Grid */}
-        {loading ? (
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <ArticleCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : articles.length === 0 ? (
-          <div className="mt-16 flex flex-col items-center justify-center text-center">
-            <Rss className="mb-4 h-16 w-16 text-gray-300 dark:text-gray-600" />
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-              No articles found
+      <div className="mx-auto flex max-w-7xl">
+        {/* Left Sidebar — Company Filter */}
+        <aside className="sticky top-16.25 hidden h-[calc(100vh-65px)] w-72 shrink-0 overflow-y-auto border-r border-gray-200 bg-white/50 p-4 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/50 lg:block">
+          <div className="mb-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Companies
             </h3>
-            <p className="mt-2 max-w-md text-gray-500 dark:text-gray-400">
-              {debouncedSearch
-                ? `No results for "${debouncedSearch}". Try a different search term.`
-                : "No articles yet. Check back soon — new articles are fetched automatically."}
+            <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+              {companies.length} sources
             </p>
           </div>
-        ) : (
-          <>
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
+          <CompanyFilter
+            companies={companies}
+            selected={selectedCompany}
+            onSelect={handleCompanySelect}
+          />
+        </aside>
+
+        {/* Main Content */}
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          {/* Search & Stats */}
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {selectedCompany
+                  ? `${companies.find((c) => c.slug === selectedCompany)?.name ?? "Company"} Articles`
+                  : "Latest Articles"}
+              </h2>
+              <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                {totalArticles.toLocaleString()} article
+                {totalArticles !== 1 ? "s" : ""}{" "}
+                {selectedCompany
+                  ? `from ${companies.find((c) => c.slug === selectedCompany)?.name ?? selectedCompany}`
+                  : `from ${companies.length} companies`}
+              </p>
+            </div>
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          </div>
+
+          {/* Mobile Company Filter */}
+          <div className="mb-6 lg:hidden">
+            <CompanyFilter
+              companies={companies}
+              selected={selectedCompany}
+              onSelect={handleCompanySelect}
+            />
+          </div>
+
+          {/* Articles List */}
+          {loading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ArticleCardSkeleton key={i} />
               ))}
             </div>
-
-            {/* Load More */}
-            {pagination?.hasNext && (
-              <div className="mt-10 flex justify-center">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
-                >
-                  {loadingMore ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                      Loading...
-                    </span>
-                  ) : (
-                    `Load more (${pagination.page * pagination.limit} of ${pagination.total})`
-                  )}
-                </button>
+          ) : articles.length === 0 ? (
+            <div className="mt-16 flex flex-col items-center justify-center text-center">
+              <Rss className="mb-4 h-16 w-16 text-gray-300 dark:text-gray-600" />
+              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+                No articles found
+              </h3>
+              <p className="mt-2 max-w-md text-gray-500 dark:text-gray-400">
+                {debouncedSearch
+                  ? `No results for "${debouncedSearch}". Try a different search term.`
+                  : "No articles yet. Check back soon — new articles are fetched automatically."}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                {articles.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
               </div>
-            )}
-          </>
-        )}
-      </main>
 
-      {/* Footer */}
-      <footer className="mt-16 border-t border-gray-200 bg-white py-8 dark:border-gray-800 dark:bg-gray-900">
-        <div className="mx-auto max-w-7xl px-4 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>
-            UniBlog — Aggregating engineering blogs from top tech companies.
-          </p>
-          <p className="mt-1">
-            All articles link to their original source. We don&apos;t host any
-            content.
-          </p>
-        </div>
-      </footer>
+              {/* Infinite scroll sentinel */}
+              <div ref={sentinelRef} className="py-4">
+                {loadingMore && (
+                  <div className="flex justify-center">
+                    <svg
+                      className="h-6 w-6 animate-spin text-gray-400"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
