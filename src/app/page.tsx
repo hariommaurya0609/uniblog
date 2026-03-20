@@ -159,7 +159,7 @@ export default function HomePage() {
   };
 
   const selectedCompanyData = selectedCompany
-    ? companies.find((c) => c.slug === selectedCompany) ?? null
+    ? (companies.find((c) => c.slug === selectedCompany) ?? null)
     : null;
 
   // Use company's known article count immediately on selection (no API round-trip lag).
@@ -196,11 +196,16 @@ export default function HomePage() {
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-                {selectedCompanyData ? `${selectedCompanyData.name} Articles` : "Latest Articles"}
+                {selectedCompanyData
+                  ? `${selectedCompanyData.name} Articles`
+                  : "Latest Articles"}
               </h2>
-              <span className="text-sm text-gray-300 dark:text-gray-600">·</span>
+              <span className="text-sm text-gray-300 dark:text-gray-600">
+                ·
+              </span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {totalArticles.toLocaleString()} article{totalArticles !== 1 ? "s" : ""}{" "}
+                {totalArticles.toLocaleString()} article
+                {totalArticles !== 1 ? "s" : ""}{" "}
                 {selectedCompanyData
                   ? `from ${selectedCompanyData.name}`
                   : `from ${companies.length} companies`}
