@@ -166,12 +166,12 @@ export default function HomePage() {
 
       <div className="mx-auto flex max-w-7xl">
         {/* Left Sidebar — Company Filter */}
-        <aside className="sticky top-16.25 hidden h-[calc(100vh-65px)] w-72 shrink-0 overflow-y-auto border-r border-gray-200 bg-white/50 p-4 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/50 lg:block">
+        <aside className="sticky top-16.25 hidden h-[calc(100vh-65px)] w-72 shrink-0 overflow-y-auto border-r border-gray-200/60 bg-white/70 p-4 backdrop-blur-sm dark:border-gray-800/50 dark:bg-gray-950/70 lg:block">
           <div className="mb-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
               Companies
             </h3>
-            <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">
               {companies.length} sources
             </p>
           </div>
@@ -187,7 +187,7 @@ export default function HomePage() {
           {/* Search & Stats */}
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {selectedCompany
                   ? `${companies.find((c) => c.slug === selectedCompany)?.name ?? "Company"} Articles`
                   : "Latest Articles"}

@@ -27,7 +27,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
       href={article.originalUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="article-card group flex gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 sm:gap-5"
+      className="article-card group flex gap-4 rounded-xl border border-gray-200/80 bg-white p-4 dark:border-gray-800/60 dark:bg-gray-900/80 sm:gap-5"
     >
       {/* Thumbnail */}
       <div className="relative hidden h-28 w-44 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 sm:block">
@@ -94,20 +94,20 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+          <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-gray-800 group-hover:text-indigo-600 dark:text-gray-50 dark:group-hover:text-indigo-400">
             {article.title}
           </h3>
 
           {/* Description */}
           {article.description && (
-            <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+            <p className="mt-1.5 line-clamp-3 text-[13px] leading-relaxed text-gray-600 dark:text-gray-400">
               {article.description}
             </p>
           )}
         </div>
 
         {/* Bottom: Meta row */}
-        <div className="mt-2 flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+        <div className="mt-3 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500">
           {article.author && (
             <span className="flex items-center gap-1">
               <User className="h-3 w-3" />

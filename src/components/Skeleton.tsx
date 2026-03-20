@@ -1,6 +1,6 @@
 export function ArticleCardSkeleton() {
   return (
-    <div className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 sm:gap-5">
+    <div className="flex gap-4 rounded-xl border border-gray-200/80 bg-white p-4 dark:border-gray-800/60 dark:bg-gray-900/80 sm:gap-5">
       {/* Image skeleton */}
       <div className="skeleton hidden h-28 w-44 shrink-0 rounded-lg sm:block" />
 

@@ -41,7 +41,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  if (localStorage.getItem('uniblog-theme') === 'dark')
+                  if (localStorage.getItem('uniblog-theme') !== 'light')
                     document.documentElement.classList.add('dark');
                 } catch(e) {}
               })();
