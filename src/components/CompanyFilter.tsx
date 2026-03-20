@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface Company {
   id: string;
@@ -17,12 +17,14 @@ interface CompanyFilterProps {
   companies: Company[];
   selected: string | null;
   onSelect: (slug: string | null) => void;
+  variant?: "sidebar" | "default";
 }
 
 export function CompanyFilter({
   companies,
   selected,
   onSelect,
+  variant = "default",
 }: CompanyFilterProps) {
   const [filterQuery, setFilterQuery] = useState("");
 
@@ -34,24 +36,38 @@ export function CompanyFilter({
       )
     : companies;
 
+  // Force sidebar layout when variant="sidebar" (used in mobile drawer)
+  const showSidebar = variant === "sidebar";
+
   return (
     <div className="space-y-2">
-      {/* Search within companies — desktop sidebar only */}
-      <div className="relative mb-3 hidden lg:block">
+      {/* Search within companies */}
+      <div
+        className={`relative mb-3 ${showSidebar ? "block" : "hidden lg:block"}`}
+      >
         <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
           placeholder="Filter companies..."
           value={filterQuery}
           onChange={(e) => setFilterQuery(e.target.value)}
-          className="w-full rounded-lg border border-gray-200/80 bg-gray-50 py-2 pl-8 pr-3 text-xs placeholder:text-gray-400 focus:border-indigo-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 dark:border-gray-700/60 dark:bg-gray-800/50 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:bg-gray-800"
+          className="w-full rounded-lg border border-gray-200/80 bg-gray-50 py-2 pl-8 pr-8 text-xs placeholder:text-gray-400 focus:border-indigo-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/10 dark:border-gray-700/60 dark:bg-gray-800/50 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:bg-gray-800"
         />
+        {filterQuery && (
+          <button
+            onClick={() => setFilterQuery("")}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            aria-label="Clear search"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       {/* All button */}
       <button
         onClick={() => onSelect(null)}
-        className={`hidden w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all lg:flex ${
+        className={`${showSidebar ? "flex" : "hidden lg:flex"} w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium transition-all ${
           selected === null
             ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
             : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -68,8 +84,10 @@ export function CompanyFilter({
         </span>
       </button>
 
-      {/* Company list — vertical on desktop */}
-      <div className="hidden space-y-0.5 lg:block">
+      {/* Company list — vertical (sidebar / desktop) */}
+      <div
+        className={`${showSidebar ? "block" : "hidden lg:block"} space-y-0.5`}
+      >
         {filtered.map((company) => (
           <button
             key={company.slug}
@@ -114,56 +132,58 @@ export function CompanyFilter({
         )}
       </div>
 
-      {/* Mobile — horizontal pills */}
-      <div className="flex flex-wrap gap-2 lg:hidden">
-        <button
-          onClick={() => onSelect(null)}
-          className={`company-pill flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-            selected === null
-              ? "bg-indigo-600 text-white shadow-md"
-              : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-          } border border-gray-200 dark:border-gray-700`}
-        >
-          All
-        </button>
-        {companies.map((company) => (
+      {/* Mobile — horizontal pills (default variant only, never inside the sidebar drawer) */}
+      {!showSidebar && (
+        <div className="flex flex-wrap gap-2 lg:hidden">
           <button
-            key={company.slug}
-            onClick={() =>
-              onSelect(selected === company.slug ? null : company.slug)
-            }
-            className={`company-pill flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
-              selected === company.slug
-                ? "text-white shadow-md"
+            onClick={() => onSelect(null)}
+            className={`company-pill flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+              selected === null
+                ? "bg-indigo-600 text-white shadow-md"
                 : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             } border border-gray-200 dark:border-gray-700`}
-            style={
-              selected === company.slug
-                ? { backgroundColor: company.color }
-                : undefined
-            }
           >
-            <Image
-              src={company.logo}
-              alt={company.name}
-              width={16}
-              height={16}
-              className="rounded-sm"
-              unoptimized
-            />
-            <span>{company.name}</span>
-            <span
-              className={`text-xs ${
-                selected === company.slug
-                  ? "text-white/80"
-                  : "text-gray-400 dark:text-gray-500"
-              }`}
-            >
-              {company.articleCount}
-            </span>
+            All
           </button>
-        ))}
-      </div>
+          {filtered.map((company) => (
+            <button
+              key={company.slug}
+              onClick={() =>
+                onSelect(selected === company.slug ? null : company.slug)
+              }
+              className={`company-pill flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
+                selected === company.slug
+                  ? "text-white shadow-md"
+                  : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              } border border-gray-200 dark:border-gray-700`}
+              style={
+                selected === company.slug
+                  ? { backgroundColor: company.color }
+                  : undefined
+              }
+            >
+              <Image
+                src={company.logo}
+                alt={company.name}
+                width={16}
+                height={16}
+                className="rounded-sm"
+                unoptimized
+              />
+              <span>{company.name}</span>
+              <span
+                className={`text-xs ${
+                  selected === company.slug
+                    ? "text-white/80"
+                    : "text-gray-400 dark:text-gray-500"
+                }`}
+              >
+                {company.articleCount}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

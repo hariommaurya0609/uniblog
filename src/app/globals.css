@@ -15,6 +15,20 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Mobile drawer slide-in */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobile-drawer {
+  animation: slideInLeft 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 /* Light theme: warm off-white background */
 body {
   background-color: #f8fafc;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { X } from "lucide-react";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { CompanyFilter } from "@/components/CompanyFilter";
@@ -52,6 +53,7 @@ export default function HomePage() {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   // Debounce search: wait 500ms after user stops typing, require >= 2 chars
   useEffect(() => {
@@ -156,6 +158,7 @@ export default function HomePage() {
   const handleCompanySelect = (slug: string | null) => {
     setSelectedCompany(slug);
     setSearchQuery(""); // Clear search when changing company
+    setMobileDrawerOpen(false); // Close drawer on mobile after selection
   };
 
   const selectedCompanyData = selectedCompany
@@ -170,7 +173,44 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header onMenuOpen={() => setMobileDrawerOpen(true)} />
+
+      {/* Mobile drawer */}
+      {mobileDrawerOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+          {/* Slide-in panel */}
+          <div className="mobile-drawer fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-white p-4 shadow-2xl dark:bg-gray-950 lg:hidden">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                  Companies
+                </h3>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {companies.length} sources
+                </span>
+              </div>
+              <button
+                onClick={() => setMobileDrawerOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                aria-label="Close menu"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <CompanyFilter
+              companies={companies}
+              selected={selectedCompany}
+              onSelect={handleCompanySelect}
+              variant="sidebar"
+            />
+          </div>
+        </>
+      )}
 
       <div className="mx-auto flex max-w-7xl">
         {/* Left Sidebar — Company Filter */}
@@ -212,15 +252,6 @@ export default function HomePage() {
               </p>
             </div>
             <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          </div>
-
-          {/* Mobile Company Filter */}
-          <div className="mb-6 lg:hidden">
-            <CompanyFilter
-              companies={companies}
-              selected={selectedCompany}
-              onSelect={handleCompanySelect}
-            />
           </div>
 
           {/* Articles List */}
