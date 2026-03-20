@@ -158,7 +158,15 @@ export default function HomePage() {
     setSearchQuery(""); // Clear search when changing company
   };
 
-  const totalArticles = pagination?.total ?? 0;
+  const selectedCompanyData = selectedCompany
+    ? companies.find((c) => c.slug === selectedCompany) ?? null
+    : null;
+
+  // Use company's known article count immediately on selection (no API round-trip lag).
+  // Fall back to pagination total once the request completes.
+  const totalArticles = loading
+    ? (selectedCompanyData?.articleCount ?? pagination?.total ?? 0)
+    : (pagination?.total ?? 0);
 
   return (
     <div className="min-h-screen">
@@ -167,13 +175,13 @@ export default function HomePage() {
       <div className="mx-auto flex max-w-7xl">
         {/* Left Sidebar — Company Filter */}
         <aside className="sticky top-16.25 hidden h-[calc(100vh-65px)] w-72 shrink-0 overflow-y-auto border-r border-gray-200/60 bg-white/70 p-4 backdrop-blur-sm dark:border-gray-800/50 dark:bg-gray-950/70 lg:block">
-          <div className="mb-4">
+          <div className="mb-4 flex items-baseline gap-2">
             <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
               Companies
             </h3>
-            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">
+            <span className="text-xs text-gray-400 dark:text-gray-500">
               {companies.length} sources
-            </p>
+            </span>
           </div>
           <CompanyFilter
             companies={companies}
@@ -186,17 +194,15 @@ export default function HomePage() {
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
           {/* Search & Stats */}
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {selectedCompany
-                  ? `${companies.find((c) => c.slug === selectedCompany)?.name ?? "Company"} Articles`
-                  : "Latest Articles"}
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {selectedCompanyData ? `${selectedCompanyData.name} Articles` : "Latest Articles"}
               </h2>
-              <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                {totalArticles.toLocaleString()} article
-                {totalArticles !== 1 ? "s" : ""}{" "}
-                {selectedCompany
-                  ? `from ${companies.find((c) => c.slug === selectedCompany)?.name ?? selectedCompany}`
+              <span className="text-sm text-gray-300 dark:text-gray-600">·</span>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {totalArticles.toLocaleString()} article{totalArticles !== 1 ? "s" : ""}{" "}
+                {selectedCompanyData
+                  ? `from ${selectedCompanyData.name}`
                   : `from ${companies.length} companies`}
               </p>
             </div>
