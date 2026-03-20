@@ -17,7 +17,7 @@ const parser = new RssParser({
   headers: {
     "User-Agent": "UniBlog/1.0 (Tech Blog Aggregator)",
     Accept:
-      "application/rss+xml, application/atom+xml, application/xml, text/xml",
+      "text/html, application/rss+xml, application/atom+xml, application/xml, text/xml",
   },
   customFields: {
     item: [
@@ -98,12 +98,21 @@ async function fetchOgImage(pageUrl: string): Promise<string | null> {
               return;
             }
             let data = "";
+            let destroyed = false;
             res.on("data", (chunk: string) => {
               data += chunk;
-              if (data.length > 200_000) req.destroy();
+              if (data.length > 200_000) {
+                destroyed = true;
+                req.destroy();
+                resolve(data);
+              }
             });
-            res.on("end", () => resolve(data));
-            res.on("error", reject);
+            res.on("end", () => {
+              if (!destroyed) resolve(data);
+            });
+            res.on("error", (err) => {
+              if (!destroyed) reject(err);
+            });
           },
         );
         req.on("error", reject);
@@ -135,12 +144,23 @@ async function fetchOgImage(pageUrl: string): Promise<string | null> {
 
 async function main() {
   const isDry = process.argv.includes("--dry");
+  const onlyFlag = process.argv.find((a) => a.startsWith("--only="));
+  const onlySlug = onlyFlag ? onlyFlag.split("=")[1] : null;
 
   console.log(isDry ? "🧪 DRY RUN MODE\n" : "🕷️  Starting scraper...\n");
 
   // Step 1 — Sync companies
-  console.log(`📦 Syncing ${COMPANY_CONFIGS.length} companies...\n`);
-  for (const config of COMPANY_CONFIGS) {
+  const configsToSync = onlySlug
+    ? COMPANY_CONFIGS.filter((c) => c.slug === onlySlug)
+    : COMPANY_CONFIGS;
+
+  if (onlySlug && configsToSync.length === 0) {
+    console.error(`❌ No company found with slug "${onlySlug}"`);
+    process.exit(1);
+  }
+
+  console.log(`📦 Syncing ${configsToSync.length} companies...\n`);
+  for (const config of configsToSync) {
     await prisma.company.upsert({
       where: { slug: config.slug },
       create: config,
@@ -148,16 +168,21 @@ async function main() {
     });
   }
 
-  // Deactivate removed companies
-  const activeSlugs = COMPANY_CONFIGS.map((c) => c.slug);
-  await prisma.company.updateMany({
-    where: { slug: { notIn: activeSlugs } },
-    data: { isActive: false },
-  });
+  // Deactivate removed companies (skip when using --only)
+  if (!onlySlug) {
+    const activeSlugs = COMPANY_CONFIGS.map((c) => c.slug);
+    await prisma.company.updateMany({
+      where: { slug: { notIn: activeSlugs } },
+      data: { isActive: false },
+    });
+  }
 
   // Step 2 — Fetch active companies
   const companies = await prisma.company.findMany({
-    where: { isActive: true },
+    where: {
+      isActive: true,
+      ...(onlySlug ? { slug: onlySlug } : {}),
+    },
   });
 
   console.log(`🔍 Scraping ${companies.length} feeds...\n`);
@@ -185,7 +210,7 @@ async function main() {
 
       if (!isDry) {
         for (const item of articles) {
-          const url = item.link;
+          const url = item.link?.trim();
           if (!url) continue;
 
           // Extract image

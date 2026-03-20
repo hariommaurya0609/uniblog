@@ -9,7 +9,7 @@ const parser = new RssParser({
   headers: {
     "User-Agent": "UniBlog/1.0 (Tech Blog Aggregator)",
     Accept:
-      "application/rss+xml, application/atom+xml, application/xml, text/xml",
+      "text/html, application/rss+xml, application/atom+xml, application/xml, text/xml",
   },
   requestOptions: {
     rejectUnauthorized: false,
@@ -69,12 +69,21 @@ async function fetchOgImage(pageUrl: string): Promise<string | null> {
               return;
             }
             let data = "";
+            let destroyed = false;
             res.on("data", (chunk: string) => {
               data += chunk;
-              if (data.length > 200_000) req.destroy();
+              if (data.length > 200_000) {
+                destroyed = true;
+                req.destroy();
+                resolve(data);
+              }
             });
-            res.on("end", () => resolve(data));
-            res.on("error", reject);
+            res.on("end", () => {
+              if (!destroyed) resolve(data);
+            });
+            res.on("error", (err) => {
+              if (!destroyed) reject(err);
+            });
           },
         );
         req.on("error", reject);
@@ -189,10 +198,7 @@ export async function parseRssFeed(feedUrl: string): Promise<ArticleItem[]> {
     return {
       title: item.title?.trim() || "Untitled",
       description,
-      author:
-        item.creator ||
-        (itemRecord.dcCreator as string) ||
-        null,
+      author: item.creator || (itemRecord.dcCreator as string) || null,
       imageUrl,
       originalUrl: item.link || "",
       readTime,

@@ -448,7 +448,7 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
     logo: "https://www.google.com/s2/favicons?domain=uber.com&sz=128",
     website: "https://uber.com",
     blogUrl: "https://www.uber.com/blog/engineering",
-    feedUrl: "https://www.uber.com/blog/engineering/rss/",
+    feedUrl: "https://www.uber.com/en-US/blog/engineering/rss/",
     feedType: "rss",
     color: "#000000",
   },
