@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Cache companies for 5 minutes — list rarely changes
-export const revalidate = 300;
-
 /**
  * GET /api/companies
  *
@@ -41,7 +38,7 @@ export async function GET() {
       { data },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+          "Cache-Control": "no-store",
         },
       },
     );

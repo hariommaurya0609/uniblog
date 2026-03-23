@@ -207,6 +207,7 @@ export default function HomePage() {
               selected={selectedCompany}
               onSelect={handleCompanySelect}
               variant="sidebar"
+              totalArticles={!selectedCompany ? totalArticles : undefined}
             />
           </div>
         </>
@@ -227,6 +228,7 @@ export default function HomePage() {
             companies={companies}
             selected={selectedCompany}
             onSelect={handleCompanySelect}
+            totalArticles={!selectedCompany ? totalArticles : undefined}
           />
         </aside>
 
