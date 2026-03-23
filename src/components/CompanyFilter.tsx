@@ -80,7 +80,10 @@ export function CompanyFilter({
         </span>
         <span className="flex-1">All Companies</span>
         <span className="text-xs text-gray-400 dark:text-gray-500">
-          {(totalArticles ?? companies.reduce((sum, c) => sum + c.articleCount, 0)).toLocaleString()}
+          {(
+            totalArticles ??
+            companies.reduce((sum, c) => sum + c.articleCount, 0)
+          ).toLocaleString()}
         </span>
       </button>
 
