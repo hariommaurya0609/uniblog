@@ -190,8 +190,7 @@ async function fetchFeedXml(
             const lastItem = data.lastIndexOf("</item>");
             if (lastItem !== -1) {
               resolve(
-                data.slice(0, lastItem + "</item>".length) +
-                  "</channel></rss>",
+                data.slice(0, lastItem + "</item>".length) + "</channel></rss>",
               );
             } else {
               resolve(data);
@@ -266,7 +265,11 @@ async function main() {
     }
 
     try {
-      const xml = await withTimeout(fetchFeedXml(company.feedUrl), 45_000, null);
+      const xml = await withTimeout(
+        fetchFeedXml(company.feedUrl),
+        45_000,
+        null,
+      );
       if (!xml) throw new Error("Feed fetch timed out");
       const feed = await parser.parseString(xml);
       const articles = (feed.items || []).slice(0, 100); // Limit to 100 most recent articles
