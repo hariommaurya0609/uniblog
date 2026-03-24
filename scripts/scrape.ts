@@ -142,6 +142,74 @@ async function fetchOgImage(pageUrl: string): Promise<string | null> {
   }
 }
 
+/**
+ * Fetch a feed URL as raw XML, capping at maxBytes of uncompressed content.
+ * Truncates cleanly at the last complete </item> so oversized feeds (e.g. 15 MB)
+ * still parse correctly. Falls back to the full response if no </item> boundary found.
+ */
+async function fetchFeedXml(
+  url: string,
+  maxBytes = 2_000_000,
+  redirects = 0,
+): Promise<string | null> {
+  if (redirects > 5) return null;
+  return new Promise((resolve) => {
+    const mod = url.startsWith("https") ? https : http;
+    const req = mod.get(
+      url,
+      {
+        headers: {
+          "User-Agent": "UniBlog/1.0 (Tech Blog Aggregator)",
+          Accept:
+            "application/rss+xml, application/atom+xml, application/xml, text/xml, text/html",
+        },
+        rejectUnauthorized: false,
+      },
+      (res) => {
+        if (
+          res.statusCode &&
+          res.statusCode >= 300 &&
+          res.statusCode < 400 &&
+          res.headers.location
+        ) {
+          let loc = res.headers.location as string;
+          if (loc.startsWith("/")) {
+            const parsed = new URL(url);
+            loc = `${parsed.protocol}//${parsed.host}${loc}`;
+          }
+          req.destroy();
+          res.resume();
+          fetchFeedXml(loc, maxBytes, redirects + 1).then(resolve);
+          return;
+        }
+        let data = "";
+        res.on("data", (chunk: Buffer) => {
+          data += chunk.toString();
+          if (data.length >= maxBytes) {
+            req.destroy();
+            const lastItem = data.lastIndexOf("</item>");
+            if (lastItem !== -1) {
+              resolve(
+                data.slice(0, lastItem + "</item>".length) +
+                  "</channel></rss>",
+              );
+            } else {
+              resolve(data);
+            }
+          }
+        });
+        res.on("end", () => resolve(data));
+        res.on("error", () => resolve(null));
+      },
+    );
+    req.on("error", () => resolve(null));
+    req.setTimeout(30_000, () => {
+      req.destroy();
+      resolve(null);
+    });
+  });
+}
+
 async function main() {
   const isDry = process.argv.includes("--dry");
   const onlyFlag = process.argv.find((a) => a.startsWith("--only="));
@@ -198,12 +266,9 @@ async function main() {
     }
 
     try {
-      const feed = await withTimeout(
-        parser.parseURL(company.feedUrl),
-        20_000,
-        null as Awaited<ReturnType<typeof parser.parseURL>> | null,
-      );
-      if (!feed) throw new Error("Feed fetch timed out");
+      const xml = await withTimeout(fetchFeedXml(company.feedUrl), 45_000, null);
+      if (!xml) throw new Error("Feed fetch timed out");
+      const feed = await parser.parseString(xml);
       const articles = (feed.items || []).slice(0, 100); // Limit to 100 most recent articles
       totalFound += articles.length;
       let newCount = 0;

@@ -51,6 +51,16 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
     color: "#FF9900",
   },
   {
+    name: "Amazon Science",
+    slug: "amazon-science",
+    logo: "https://www.google.com/s2/favicons?domain=amazon.science&sz=128",
+    website: "https://amazon.science",
+    blogUrl: "https://www.amazon.science/blog",
+    feedUrl: "https://www.amazon.science/index.rss",
+    feedType: "rss",
+    color: "#232F3E",
+  },
+  {
     name: "Microsoft",
     slug: "microsoft",
     logo: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=128",
