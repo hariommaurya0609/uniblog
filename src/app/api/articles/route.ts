@@ -29,13 +29,13 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause — always restrict to active companies
+    // Build where clause — always restrict to active, non-disabled companies
     const where: Record<string, unknown> = {
-      company: { isActive: true },
+      company: { isActive: true, isDisabled: false },
     };
 
     if (company) {
-      where.company = { slug: company, isActive: true };
+      where.company = { slug: company, isActive: true, isDisabled: false };
     }
 
     if (search) {

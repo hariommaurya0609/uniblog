@@ -19,9 +19,10 @@ model Company {
   blogUrl   String // e.g. "https://netflixtechblog.com"
   feedUrl   String? // RSS/Atom feed URL (null if scraping)
   feedType  String   @default("rss") // "rss" | "atom" | "scrape"
-  color     String   @default("#6366f1") // brand color for UI
-  isActive  Boolean  @default(true) // toggle scraping on/off
-  createdAt DateTime @default(now())
+  color      String   @default("#6366f1") // brand color for UI
+  isActive   Boolean  @default(true)  // toggle scraping on/off
+  isDisabled Boolean  @default(false) // hide company & its articles from the UI
+  createdAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   articles Article[]
