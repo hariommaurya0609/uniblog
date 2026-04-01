@@ -175,6 +175,23 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Header onMenuOpen={() => setMobileDrawerOpen(true)} />
 
+      {/* SEO Hero — keyword-rich text for search engines, subtle for users */}
+      <section className="border-b border-gray-100 bg-linear-to-b from-indigo-50/60 to-transparent px-4 py-8 text-center dark:border-gray-800/50 dark:from-indigo-950/20">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+          All Tech Engineering Blogs in One Place
+        </h1>
+        <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-gray-500 dark:text-gray-400 sm:text-base">
+          UniBlog aggregates engineering blogs from{" "}
+          <strong className="text-gray-700 dark:text-gray-300">Netflix</strong>,{" "}
+          <strong className="text-gray-700 dark:text-gray-300">Uber</strong>,{" "}
+          <strong className="text-gray-700 dark:text-gray-300">Airbnb</strong>,{" "}
+          <strong className="text-gray-700 dark:text-gray-300">Meta</strong>,{" "}
+          <strong className="text-gray-700 dark:text-gray-300">Spotify</strong>,{" "}
+          <strong className="text-gray-700 dark:text-gray-300">GitHub</strong>{" "}
+          and 100+ top tech companies — updated daily.
+        </p>
+      </section>
+
       {/* Mobile drawer */}
       {mobileDrawerOpen && (
         <>
@@ -317,6 +334,26 @@ export default function HomePage() {
           )}
         </main>
       </div>
+
+      {/* SEO Footer */}
+      <footer className="border-t border-gray-100 px-4 py-10 dark:border-gray-800/50">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-center text-xs leading-relaxed text-gray-400 dark:text-gray-600">
+            UniBlog is a free tech blog aggregator. Read the latest software engineering articles,
+            system design posts, and developer insights from top tech companies including Netflix
+            Engineering, Uber Engineering, Airbnb Tech, Meta Engineering, GitHub Blog, Spotify
+            Engineering, Google Developers, Amazon Science, Microsoft Tech Community, Dropbox Tech,
+            Stripe Blog, Pinterest Engineering, Twitter/X Engineering, LinkedIn Engineering,
+            DoorDash Engineering, Lyft Engineering, Shopify Engineering, Cloudflare Blog, and more.
+          </p>
+          <p className="mt-3 text-center text-xs text-gray-400 dark:text-gray-600">
+            © {new Date().getFullYear()} UniBlog · Tech Engineering Blog Aggregator ·{" "}
+            <a href="https://uniblog.site" className="hover:underline">
+              uniblog.site
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -17,15 +17,24 @@ export const metadata: Metadata = {
   description:
     "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and 100+ more companies — all in one unified feed.",
   keywords: [
-    "tech blog",
-    "engineering blog",
-    "software engineering",
+    "tech blog aggregator",
+    "engineering blog aggregator",
+    "company engineering blogs",
+    "tech blogs in one place",
+    "software engineering articles",
     "netflix tech blog",
-    "uber engineering",
-    "system design",
-    "blog aggregator",
+    "uber engineering blog",
+    "airbnb tech blog",
+    "meta engineering blog",
+    "spotify engineering blog",
+    "github engineering blog",
+    "google developers blog",
+    "system design articles",
     "developer blog",
     "programming articles",
+    "engineering blog",
+    "tech blog",
+    "software engineering",
   ],
   authors: [{ name: "UniBlog" }],
   creator: "UniBlog",
@@ -73,6 +82,29 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* JSON-LD Structured Data — helps Google understand the site */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "UniBlog",
+              url: "https://uniblog.site",
+              description:
+                "Tech blog aggregator — read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify and 100+ companies in one place.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://uniblog.site/?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         {/* Preconnect to external image origins for faster LCP */}
         <link rel="preconnect" href="https://storage.googleapis.com" />
         <link rel="preconnect" href="https://miro.medium.com" />
