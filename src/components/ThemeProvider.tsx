@@ -27,12 +27,12 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
 
   // Initialize from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("uniblog-theme") as Theme | null;
-    const initial = stored === "light" ? "light" : "dark";
+    const initial = stored === "dark" ? "dark" : "light";
     setThemeState(initial);
     applyTheme(initial);
   }, []);
