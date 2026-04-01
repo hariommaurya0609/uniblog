@@ -73,6 +73,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preconnect to external image origins for faster LCP */}
+        <link rel="preconnect" href="https://storage.googleapis.com" />
+        <link rel="preconnect" href="https://miro.medium.com" />
+        <link rel="preconnect" href="https://engineering.atspotify.com" />
         {GA_ID && (
           <>
             <Script

@@ -68,29 +68,47 @@ body {
 .article-card {
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease,
     transform 0.2s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  will-change: transform;
+  position: relative;
+}
+
+/* Use pseudo-element for hover shadow so opacity (composited) animates instead of box-shadow (non-composited) */
+.article-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    0 4px 12px rgba(99, 102, 241, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
 .article-card:hover {
   border-color: #a5b4fc;
-  box-shadow:
-    0 4px 12px rgba(99, 102, 241, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06);
   transform: translateY(-1px);
+}
+
+.article-card:hover::after {
+  opacity: 1;
 }
 
 .dark .article-card {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.dark .article-card:hover {
-  border-color: #6366f1;
+.dark .article-card::after {
   box-shadow:
     0 4px 16px rgba(99, 102, 241, 0.15),
     0 1px 3px rgba(0, 0, 0, 0.3);
-  transform: translateY(-1px);
+}
+
+.dark .article-card:hover {
+  border-color: #6366f1;
 }
 
 /* Skeleton loading shimmer */

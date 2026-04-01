@@ -278,8 +278,12 @@ export default function HomePage() {
           ) : (
             <>
               <div className="space-y-4">
-                {articles.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
+                {articles.map((article, index) => (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    priority={index < 3}
+                  />
                 ))}
               </div>
 

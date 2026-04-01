@@ -19,9 +19,10 @@ interface ArticleCardProps {
       color: string;
     };
   };
+  priority?: boolean;
 }
 
-export function ArticleCard({ article }: ArticleCardProps) {
+export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <a
       href={article.originalUrl}
@@ -38,7 +39,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="176px"
-            unoptimized
+            priority={priority}
           />
         ) : (
           <div
