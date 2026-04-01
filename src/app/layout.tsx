@@ -6,7 +6,14 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata: Metadata = {
-  title: "UniBlog — All Tech Blogs in One Place",
+  verification: {
+    google: "W7wn9aqZwrpIHcMeTIMBRDQXvuulpiGxR_Cx4USCZyI",
+  },
+  metadataBase: new URL("https://uniblog.site"),
+  title: {
+    default: "UniBlog — All Tech Blogs in One Place",
+    template: "%s | UniBlog",
+  },
   description:
     "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and 100+ more companies — all in one unified feed.",
   keywords: [
@@ -17,12 +24,40 @@ export const metadata: Metadata = {
     "uber engineering",
     "system design",
     "blog aggregator",
+    "developer blog",
+    "programming articles",
   ],
+  authors: [{ name: "UniBlog" }],
+  creator: "UniBlog",
   openGraph: {
     title: "UniBlog — All Tech Blogs in One Place",
     description:
       "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and more.",
+    url: "https://uniblog.site",
+    siteName: "UniBlog",
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UniBlog — All Tech Blogs in One Place",
+    description:
+      "Read engineering blogs from Netflix, Uber, Airbnb, Meta, GitHub, Spotify, and more.",
+    creator: "@uniblog",
+  },
+  alternates: {
+    canonical: "https://uniblog.site",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
   },
   icons: {
     icon: "/icon",
