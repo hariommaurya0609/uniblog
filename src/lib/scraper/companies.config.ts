@@ -780,17 +780,6 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
   // ═══════════════════════════════════════════════════════
   // ─── Chinese Tech Giants ──────────────────────────────
   // ═══════════════════════════════════════════════════════
-  {
-    name: "ByteDance",
-    slug: "bytedance",
-    logo: "https://www.google.com/s2/favicons?domain=bytedance.com&sz=128",
-    website: "https://bytedance.com",
-    blogUrl: "https://medium.com/bytedance-engineering",
-    feedUrl: "https://medium.com/feed/bytedance-engineering",
-    feedType: "rss",
-    color: "#3C8CFF",
-  },
-
   // ═══════════════════════════════════════════════════════
   // ─── Indian Companies ─────────────────────────────────
   // ═══════════════════════════════════════════════════════
@@ -1351,16 +1340,6 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
     feedUrl: "https://code.blender.org/feed/",
     feedType: "rss",
     color: "#EA7600",
-  },
-  {
-    name: "CockroachDB",
-    slug: "cockroachdb",
-    logo: "https://www.google.com/s2/favicons?domain=cockroachlabs.com&sz=128",
-    website: "https://cockroachlabs.com",
-    blogUrl: "https://www.cockroachlabs.com/blog/engineering",
-    feedUrl: "https://www.cockroachlabs.com/blog/rss/",
-    feedType: "rss",
-    color: "#6933FF",
   },
   {
     name: "Credit Karma",
