@@ -3,9 +3,10 @@ import { Search } from "lucide-react";
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  onClear?: () => void;
 }
 
-export function SearchBar({ value, onChange }: SearchBarProps) {
+export function SearchBar({ value, onChange, onClear }: SearchBarProps) {
   const showHint = value.trim().length === 1;
 
   return (
@@ -20,8 +21,12 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       />
       {value && (
         <button
-          onClick={() => onChange("")}
+          onClick={() => {
+            onChange("");
+            onClear?.();
+          }}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          aria-label="Clear search"
         >
           ✕
         </button>
