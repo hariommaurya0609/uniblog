@@ -781,16 +781,6 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
   // ─── Chinese Tech Giants ──────────────────────────────
   // ═══════════════════════════════════════════════════════
   {
-    name: "Alibaba Cloud",
-    slug: "alibabacloud",
-    logo: "https://www.google.com/s2/favicons?domain=alibabacloud.com&sz=128",
-    website: "https://alibabacloud.com",
-    blogUrl: "https://www.alibabacloud.com/blog",
-    feedUrl: "https://medium.com/feed/alibaba-cloud",
-    feedType: "rss",
-    color: "#FF6A00",
-  },
-  {
     name: "ByteDance",
     slug: "bytedance",
     logo: "https://www.google.com/s2/favicons?domain=bytedance.com&sz=128",
@@ -1079,16 +1069,6 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
   // ─── New additions — Active engineering blogs ──────────
   // ═══════════════════════════════════════════════════════
   {
-    name: "Algolia",
-    slug: "algolia",
-    logo: "https://www.google.com/s2/favicons?domain=algolia.com&sz=128",
-    website: "https://algolia.com",
-    blogUrl: "https://www.algolia.com/blog/engineering",
-    feedUrl: "https://www.algolia.com/blog/feed.xml",
-    feedType: "rss",
-    color: "#5468FF",
-  },
-  {
     name: "Auth0",
     slug: "auth0",
     logo: "https://www.google.com/s2/favicons?domain=auth0.com&sz=128",
@@ -1363,16 +1343,6 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
     color: "#000000",
   },
   {
-    name: "Babbel",
-    slug: "babbel",
-    logo: "https://www.google.com/s2/favicons?domain=babbel.com&sz=128",
-    website: "https://babbel.com",
-    blogUrl: "https://bytes.babbel.com/en/",
-    feedUrl: "https://bytes.babbel.com/en/feed.xml",
-    feedType: "rss",
-    color: "#7D4E9E",
-  },
-  {
     name: "Blender",
     slug: "blender",
     logo: "https://www.google.com/s2/favicons?domain=blender.org&sz=128",
@@ -1381,16 +1351,6 @@ export const COMPANY_CONFIGS: CompanyConfig[] = [
     feedUrl: "https://code.blender.org/feed/",
     feedType: "rss",
     color: "#EA7600",
-  },
-  {
-    name: "Cloudera",
-    slug: "cloudera",
-    logo: "https://www.google.com/s2/favicons?domain=cloudera.com&sz=128",
-    website: "https://cloudera.com",
-    blogUrl: "https://blog.cloudera.com",
-    feedUrl: "https://blog.cloudera.com/feed/",
-    feedType: "rss",
-    color: "#F96702",
   },
   {
     name: "CockroachDB",
