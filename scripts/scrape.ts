@@ -271,7 +271,12 @@ async function main() {
         null,
       );
       if (!xml) throw new Error("Feed fetch timed out");
-      const feed = await parser.parseString(xml);
+      // Fix unescaped & in XML (common in Medium feeds)
+      const sanitized = xml.replace(
+        /&(?![a-zA-Z][a-zA-Z0-9]*;|#[0-9]+;|#x[0-9a-fA-F]+;)/g,
+        "&amp;",
+      );
+      const feed = await parser.parseString(sanitized);
       const articles = (feed.items || []).slice(0, 100); // Limit to 100 most recent articles
       totalFound += articles.length;
       let newCount = 0;
