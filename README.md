@@ -85,10 +85,10 @@ uniblog/
 git clone https://github.com/hariommaurya0609/uniblog.git
 cd uniblog
 nvm use          # switches to Node 24 (reads .nvmrc)
-npm ci           # clean install — never modifies package-lock.json
+npm ci           # ✅ use THIS — never modifies package-lock.json
 ```
 
-> ⚠️ Always use `npm ci` instead of `npm install`. `npm install` can rewrite `package-lock.json` if your npm version differs from the one that generated it, causing unwanted git changes.
+> 🚫 **Do NOT run `npm install`** on a cloned repo. It rewrites `package-lock.json` every time, even on the same Node version if the npm patch version differs (e.g. `11.6.1` vs `11.11.0`). Always use `npm ci` — it installs exactly what's in the lockfile and never touches it.
 
 ---
 
@@ -174,7 +174,7 @@ Visit **http://localhost:3000** 🎉
 | `Cannot find module '@prisma/client'` | Run `npx prisma generate`                                                                                                                                |
 | `Table does not exist`                | Run `npx prisma db push`                                                                                                                                 |
 | `No articles showing`                 | Run `npm run scrape` to populate the database                                                                                                            |
-| `package-lock.json` keeps changing   | You're using a different Node/npm version. Run `nvm use` then `npm ci` instead of `npm install`                                                          |
+| `package-lock.json` keeps changing    | You're using a different Node/npm version. Run `nvm use` then `npm ci` instead of `npm install`                                                          |
 | `Unsupported engine` error            | Your Node/npm is too old. Run `nvm install 24 && nvm use 24`, then retry                                                                                 |
 
 ## � Deploy to Vercel
