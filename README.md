@@ -67,50 +67,108 @@ uniblog/
 └── vercel.json                     # Vercel cron config
 ```
 
-## 🚀 Getting Started
+## 🚀 Local Setup (for Contributors)
 
-### 1. Install dependencies
+### Prerequisites
+
+- **Node.js** v20 or higher (`node -v` to check)
+- **npm** v9 or higher
+- A **Supabase** account and project (free tier works)
+
+---
+
+### Step 1 — Clone & install dependencies
 
 ```bash
+git clone https://github.com/hariommaurya0609/uniblog.git
+cd uniblog
 npm install
 ```
 
-### 2. Set up environment variables
+---
 
-Create a `.env` file:
+### Step 2 — Create your `.env` file
+
+> ⚠️ The `.env` file is gitignored and is **never committed**. Every contributor must create their own.
+
+Create a file named `.env` in the project root:
 
 ```env
-# Transaction pooler (app runtime)
-DATABASE_URL="postgresql://postgres.<ref>:<password>@<host>:6543/postgres?pgbouncer=true"
-# Direct connection (migrations)
-DIRECT_URL="postgresql://postgres.<ref>:<password>@<host>:5432/postgres"
-CRON_SECRET="your-secret"
+# ── Database (Supabase) ─────────────────────────────────────────────
+# Used by the app at runtime (connection pooler, port 6543)
+DATABASE_URL="postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Used by Prisma for migrations/introspection (direct connection, port 5432)
+DIRECT_URL="postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres"
+
+# ── App ─────────────────────────────────────────────────────────────
+NODE_TLS_REJECT_UNAUTHORIZED="0"
+CRON_SECRET="dev-secret-123"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-> Get both URLs from your Supabase project → Settings → Database.
+**Where to get these values:**
 
-### 3. Push schema and seed companies
+1. Go to [supabase.com/dashboard](https://supabase.com/dashboard) → your project
+2. Navigate to **Project Settings → Database**
+3. Under **Connection string**, select **URI**:
+   - Copy the **Transaction pooler** URL (port `6543`) → paste as `DATABASE_URL`
+   - Copy the **Session pooler / Direct** URL (port `5432`) → paste as `DIRECT_URL`, but change the host from `pooler.supabase.com` to `db.<project-ref>.supabase.co` and the username from `postgres.<project-ref>` to `postgres`
+
+> ⚠️ **Special characters in password?** If your password contains `@`, `#`, `$`, `!`, `%`, etc., URL-encode them:
+> `@` → `%40`, `#` → `%23`, `$` → `%24`, `!` → `%21`
+
+**Example with password `Hariom@2024`:**
+
+```env
+DATABASE_URL="postgresql://postgres.abcxyz:Hariom%402024@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres:Hariom%402024@db.abcxyz.supabase.co:5432/postgres"
+```
+
+---
+
+### Step 3 — Set up the database
 
 ```bash
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to your Supabase database
 npx prisma db push
+
+# Seed all 108 companies
 npm run db:seed
 ```
 
-### 4. Scrape initial articles
+---
+
+### Step 4 — Scrape initial articles
 
 ```bash
-# Fetches articles from all 108 companies (~5-10 min)
+# Fetches articles from all 108 companies (~5–10 min)
 npm run scrape
 ```
 
-### 5. Start the dev server
+---
+
+### Step 5 — Start the dev server
 
 ```bash
 npm run dev
 ```
 
 Visit **http://localhost:3000** 🎉
+
+---
+
+### Troubleshooting
+
+| Error                                 | Fix                                                                                                                                                      |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `P1000: Authentication failed`        | Password has special characters — URL-encode them (e.g. `@` → `%40`). Also make sure `DIRECT_URL` uses `db.<ref>.supabase.co`, not `pooler.supabase.com` |
+| `Cannot find module '@prisma/client'` | Run `npx prisma generate`                                                                                                                                |
+| `Table does not exist`                | Run `npx prisma db push`                                                                                                                                 |
+| `No articles showing`                 | Run `npm run scrape` to populate the database                                                                                                            |
 
 ## � Deploy to Vercel
 

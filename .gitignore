@@ -9,10 +9,10 @@ out/
 prisma/dev.db
 prisma/dev.db-journal
 
-# Environment
+# Environment — never commit any .env* file except .env.example
 .env
-.env.local
-.env.production.local
+.env.*
+!.env.example
 
 # IDE
 .vscode/
