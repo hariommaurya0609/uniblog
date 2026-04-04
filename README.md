@@ -71,9 +71,11 @@ uniblog/
 
 ### Prerequisites
 
-- **Node.js** v20 or higher (`node -v` to check)
-- **npm** v9 or higher
+- **Node.js** v24 or higher — check with `node -v`, install via [nvm](https://github.com/nvm-sh/nvm)
+- **npm** v11 or higher — check with `npm -v`
 - A **Supabase** account and project (free tier works)
+
+> The project enforces these versions via `engines` in `package.json` and `.nvmrc`. If your version is too old, `npm install` will error out. Run `nvm install 24 && nvm use 24` to fix it.
 
 ---
 
@@ -82,8 +84,11 @@ uniblog/
 ```bash
 git clone https://github.com/hariommaurya0609/uniblog.git
 cd uniblog
-npm install
+nvm use          # switches to Node 24 (reads .nvmrc)
+npm ci           # clean install — never modifies package-lock.json
 ```
+
+> ⚠️ Always use `npm ci` instead of `npm install`. `npm install` can rewrite `package-lock.json` if your npm version differs from the one that generated it, causing unwanted git changes.
 
 ---
 
@@ -169,6 +174,8 @@ Visit **http://localhost:3000** 🎉
 | `Cannot find module '@prisma/client'` | Run `npx prisma generate`                                                                                                                                |
 | `Table does not exist`                | Run `npx prisma db push`                                                                                                                                 |
 | `No articles showing`                 | Run `npm run scrape` to populate the database                                                                                                            |
+| `package-lock.json` keeps changing   | You're using a different Node/npm version. Run `nvm use` then `npm ci` instead of `npm install`                                                          |
+| `Unsupported engine` error            | Your Node/npm is too old. Run `nvm install 24 && nvm use 24`, then retry                                                                                 |
 
 ## � Deploy to Vercel
 
