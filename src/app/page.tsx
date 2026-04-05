@@ -6,7 +6,7 @@ import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { CompanyFilter } from "@/components/CompanyFilter";
 import { ArticleCard } from "@/components/ArticleCard";
-import { ArticleCardSkeleton } from "@/components/Skeleton";
+import { ArticleCardSkeleton, CompanyFilterSkeleton } from "@/components/Skeleton";
 import { Rss } from "lucide-react";
 
 interface Company {
@@ -50,6 +50,7 @@ export default function HomePage() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -78,7 +79,8 @@ export default function HomePage() {
     fetch("/api/companies")
       .then((res) => res.json())
       .then((data) => setCompanies(data.data || []))
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoadingCompanies(false));
   }, []);
 
   // Fetch articles when filters change — cancels in-flight requests via AbortController
@@ -219,13 +221,17 @@ export default function HomePage() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <CompanyFilter
-              companies={companies}
-              selected={selectedCompany}
-              onSelect={handleCompanySelect}
-              variant="sidebar"
-              totalArticles={!selectedCompany ? totalArticles : undefined}
-            />
+            {loadingCompanies ? (
+              <CompanyFilterSkeleton variant="sidebar" />
+            ) : (
+              <CompanyFilter
+                companies={companies}
+                selected={selectedCompany}
+                onSelect={handleCompanySelect}
+                variant="sidebar"
+                totalArticles={!selectedCompany ? totalArticles : undefined}
+              />
+            )}
           </div>
         </>
       )}
@@ -241,12 +247,16 @@ export default function HomePage() {
               {companies.length} sources
             </span>
           </div>
-          <CompanyFilter
-            companies={companies}
-            selected={selectedCompany}
-            onSelect={handleCompanySelect}
-            totalArticles={!selectedCompany ? totalArticles : undefined}
-          />
+          {loadingCompanies ? (
+            <CompanyFilterSkeleton />
+          ) : (
+            <CompanyFilter
+              companies={companies}
+              selected={selectedCompany}
+              onSelect={handleCompanySelect}
+              totalArticles={!selectedCompany ? totalArticles : undefined}
+            />
+          )}
         </aside>
 
         {/* Main Content */}
