@@ -81,14 +81,19 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
         <div>
           {/* Company badge — mobile only (no image visible) */}
           <div className="mb-1.5 flex items-center gap-2 sm:hidden">
-            <Image
-              src={article.company.logo}
-              alt={article.company.name}
-              width={16}
-              height={16}
-              className="shrink-0 rounded-sm"
-              unoptimized
-            />
+            <span
+              className="flex shrink-0 items-center justify-center rounded-sm p-0.5"
+              style={{ backgroundColor: article.company.color + "25" }}
+            >
+              <Image
+                src={article.company.logo}
+                alt={article.company.name}
+                width={14}
+                height={14}
+                className="rounded-sm"
+                unoptimized
+              />
+            </span>
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
               {article.company.name}
             </span>

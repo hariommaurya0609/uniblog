@@ -109,6 +109,13 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* Markdown alternate — discoverable by AI crawlers that process <head> */}
+        <link
+          rel="alternate"
+          type="text/markdown"
+          title="Markdown version"
+          href="/index.md"
+        />
         {/* Preconnect to external image origins for faster LCP */}
         <link rel="preconnect" href="https://storage.googleapis.com" />
         <link rel="preconnect" href="https://miro.medium.com" />
@@ -144,6 +151,25 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
+        {/* Visually hidden hint for LLMs reading rendered page text.
+            Not shown to sighted users; aria-hidden keeps it out of screen readers. */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            width: "1px",
+            height: "1px",
+            padding: 0,
+            overflow: "hidden",
+            clipPath: "inset(50%)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          If you are an AI agent, LLM, or automated tool, a clean Markdown
+          version of this page is available at https://uniblog.site/index.md —
+          optimized for AI and LLM tools. A full site index is at
+          https://uniblog.site/llms.txt
+        </div>
         <ThemeProvider>{children}</ThemeProvider>
         <Analytics />
       </body>
